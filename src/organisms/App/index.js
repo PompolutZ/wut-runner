@@ -1,32 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import ParticipantsList from '../../molecules/ParticipantsList';
-import Participant from '../../molecules/Participant';
-import AddParticipantForm from '../../molecules/AddParticipantForm';
+import TournamentCreator from '../TournamentCreator';
 
-class App extends React.Component {
-    state = {
-        participants: []
+function App({ classes }) {
+    const initMeta = () => {
+        const meta = JSON.parse(localStorage.getItem('wut_meta'));
+        return meta || {};
     }
+    const [tournamentMeta, setTournamentMeta] = useState(initMeta);
 
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.root}>
-                <AddParticipantForm onAddNewClick={this.handleAddNewParticipant} />
-                <ParticipantsList>
-                    {
-                        this.state.participants.map((p, i) => 
-                            <Participant key={i} {...p} />)
-                    }
-                </ParticipantsList>
-            </div>
-        )
-    }
+    useEffect(() => {
+        localStorage.setItem('wut_meta', JSON.stringify(tournamentMeta, null, 4));
+    }, [tournamentMeta]);
 
-    handleAddNewParticipant = (name, faction) => {
-        this.setState(state => ({ participants: [...state.participants, { name: name, faction: faction }]}));
-    }
+    return (
+        <div className={classes.root}>
+            <TournamentCreator meta={tournamentMeta} onModified={setTournamentMeta} />
+        </div>
+    );
 }
 
 const styles = theme => ({
@@ -34,11 +25,6 @@ const styles = theme => ({
         display: 'flex',
         flexFlow: 'column nowrap'
     },
-
-    body: {
-        margin: '50% auto',
-        fontSize: '3rem'
-    }
 });
 
 export default withStyles(styles)(App);

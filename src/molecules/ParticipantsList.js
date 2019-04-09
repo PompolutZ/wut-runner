@@ -3,7 +3,7 @@ import Participant from './Participant';
 
 function ParticipantsList(props) {
     return (
-        <div>
+        <div className={props.className}>
             { 
                 props.children
             }

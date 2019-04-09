@@ -5,13 +5,16 @@ import Button from '@material-ui/core/Button';
 
 import Icon from '../atoms/Icon';
 
-function Participant({ classes, name, faction, altered }) {
-    
+function Participant({ classes, id, name, faction, altered, onDelete }) {
+    const handleDeleteClick = () => {
+        onDelete(id);
+    };
+
     return (
         <div className={altered ? classes.alteredRoot : classes.root}>
             <Icon faction={faction} />
             <Typography className={classes.name} variant="headline">{name}</Typography>
-            <Button color="secondary" variant="raised">delete</Button>
+            <Button color="secondary" variant="contained" onClick={handleDeleteClick}>delete</Button>
         </div>
     );
 }

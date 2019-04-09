@@ -4,11 +4,11 @@ import { withStyles } from '@material-ui/core/styles';
 import ParticipantsList from '../../molecules/ParticipantsList';
 import Participant from '../../molecules/Participant';
 import AddParticipantForm from '../../molecules/AddParticipantForm';
-
+import uuidv4 from 'uuid/v4';
 
 class TournamentCreator extends React.Component {
     state = {
-        participants: [],
+        participants: {},
     }
 
     componentDidMount() {
@@ -22,8 +22,10 @@ class TournamentCreator extends React.Component {
                 <AddParticipantForm onAddNewClick={this.handleAddNewParticipant} />
                 <ParticipantsList className={classes.list}>
                     {
-                        this.state.participants.map((p, i) => {
-                            return i % 2 !== 0 ? <Participant key={i} {...p} altered /> : <Participant key={i} {...p} />
+                        Object.entries(this.state.participants).map(([id, data], i) => {
+                            return i % 2 !== 0 
+                            ? <Participant key={id} id={id} {...data} altered onDelete={this.handleDeleteParticipant} /> 
+                            : <Participant key={id} id={id} {...data} onDelete={this.handleDeleteParticipant} />
                         })
                     }
                 </ParticipantsList>
@@ -31,8 +33,16 @@ class TournamentCreator extends React.Component {
         )
     }
 
+    handleDeleteParticipant = id => {
+        const copy = this.state.participants;
+        console.log(copy)
+        delete copy[id];
+        console.log(copy)
+        this.setState({ participants: copy }, () => this.props.onModified(this.state));
+    }
+
     handleAddNewParticipant = (name, faction) => {
-        this.setState(state => ({ participants: [...state.participants, { name: name, faction: faction }]}), () => {
+        this.setState(state => ({ participants: {...state.participants, [uuidv4()] : { name: name, faction: faction } }}), () => {
             this.props.onModified(this.state);
         });
     }

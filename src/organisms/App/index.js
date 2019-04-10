@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { BrowserRouter as Router, Route} from 'react-router-dom';
+
 import TournamentCreator from '../TournamentCreator';
+import Tournament from '../Tournament';
+import { ROUTES } from '../../constants';
+
+function Home() {
+    return <div>Home Page</div>
+}
 
 function App({ classes }) {
     const initMeta = () => {
@@ -15,7 +23,13 @@ function App({ classes }) {
 
     return (
         <div className={classes.root}>
-            <TournamentCreator meta={tournamentMeta} onModified={setTournamentMeta} />
+            <Router>
+                <div>
+                    <Route exact path={ROUTES.HOME} component={Home} />
+                    <Route path={ROUTES.CREATOR} render={() => <TournamentCreator meta={tournamentMeta} onModified={setTournamentMeta} />} />
+                    <Route path={ROUTES.TOURNAMENT} component={Tournament} />
+                </div>
+            </Router>
         </div>
     );
 }

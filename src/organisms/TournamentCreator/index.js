@@ -7,11 +7,14 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import uuidv4 from 'uuid/v4';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 
 import ParticipantsList from '../../molecules/ParticipantsList';
 import Participant from '../../molecules/Participant';
 import AddParticipantForm from '../../molecules/AddParticipantForm';
 import { Button } from '@material-ui/core';
+import { TOURNAMENT_ID } from '../../constants/routes';
 
 class TournamentCreator extends React.Component {
     state = {
@@ -21,6 +24,7 @@ class TournamentCreator extends React.Component {
     }
 
     componentDidMount() {
+        console.log(this.props)
         this.setState(this.props.meta);
     }
 
@@ -69,7 +73,7 @@ class TournamentCreator extends React.Component {
                 </div>
 
                 <div className={classes.startButtonContainer}>
-                    <Button className={classes.startButton} variant="contained" color="primary">Let's Go!</Button>
+                    <Button className={classes.startButton} variant="contained" color="primary" onClick={this.handleFinishAndNavigate}>Let's Go!</Button>
                 </div>
             </div>
         )
@@ -81,9 +85,7 @@ class TournamentCreator extends React.Component {
 
     handleDeleteParticipant = id => {
         const copy = this.state.participants;
-        console.log(copy)
         delete copy[id];
-        console.log(copy)
         this.setState({ participants: copy }, this.serialize);
     }
 
@@ -91,9 +93,12 @@ class TournamentCreator extends React.Component {
         this.setState({ [name]: event.target.value }, this.serialize);
     }
 
-    handleNameChange = event => {
-        this.setState({ name: event.target.value }, this.serialize);
-    };
+    handleFinishAndNavigate = () => {
+        this.setState({ id: uuidv4() }, () => {
+            this.serialize();
+            this.props.history.push(TOURNAMENT_ID(this.state.id));
+        });
+    }
 
     serialize = () => {
         this.props.onModified(this.state);
@@ -155,4 +160,7 @@ const styles = theme => ({
     }
 });
 
-export default withStyles(styles)(TournamentCreator);
+export default compose(
+    withRouter,
+    withStyles(styles)
+)(TournamentCreator);
